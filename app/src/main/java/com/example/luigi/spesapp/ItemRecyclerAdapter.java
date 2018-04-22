@@ -21,13 +21,9 @@ import java.util.List;
 public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapter.ItemViewHolder> {
 
     DetailInterface mCallBack;
-    UserDatabaseManager userDatabaseManager;
-    ListDatabaseManager listDatabaseManager;
-    ItemDatabaseManager itemDatabaseManager;
-    String name;
     List<Articolo> articoli = new ArrayList<>();
     boolean nascondi = false;
-
+    ItemDatabaseManager itemDatabaseManager;
 
     public ItemRecyclerAdapter(Context context) {
         try {
@@ -35,21 +31,21 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement DetailInterface");
         }
-
         this.updateList(context);
     }
 
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
+        ImageView check=holder.check;
 
         holder.foodName.setText(articoli.get(position).getNome());
         holder.foodValue.setText(String.valueOf(articoli.get(position).getQuantita()));
 
         if (articoli.get(position).getBuyed() == 1) {
-            holder.check.setVisibility(View.VISIBLE);
+            check.setVisibility(View.VISIBLE);
         }
         else{
-            holder.check.setVisibility(View.INVISIBLE);
+           check.setVisibility(View.INVISIBLE);
         }
 
         holder.myView.setOnClickListener(new View.OnClickListener() {
@@ -58,13 +54,14 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
 
                 if(articoli.get(position).getBuyed() == 0) {
                     articoli.get(position).setBuyed(1);
+                    check.setVisibility(View.VISIBLE);
                 }
                 else {
                     articoli.get(position).setBuyed(0);
+                    check.setVisibility(View.INVISIBLE);
                 }
 
-                Log.d("articolo", articoli.get(position).getNome() );
-                ItemDatabaseManager itemDatabaseManager = new ItemDatabaseManager(holder.context);
+                itemDatabaseManager = new ItemDatabaseManager(holder.context);
                 itemDatabaseManager.open();
                 itemDatabaseManager.updateItem(articoli.get(position));
                 updateList(holder.context);
@@ -100,7 +97,7 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
 
         int listId = this.mCallBack.getListId();
 
-        ItemDatabaseManager itemDatabaseManager = new ItemDatabaseManager(context);
+        itemDatabaseManager = new ItemDatabaseManager(context);
         itemDatabaseManager.open();
         Cursor cursor = itemDatabaseManager.getItemsByList(listId);
         cursor.moveToFirst();
@@ -130,12 +127,6 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
 
 
         }
-
-
-
-    public int getListID(int position){
-        return articoli.get(position).getId_lista();
-    }
 
     @Override
     public ItemRecyclerAdapter.ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

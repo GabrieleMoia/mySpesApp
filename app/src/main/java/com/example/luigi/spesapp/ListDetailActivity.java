@@ -38,6 +38,10 @@ public class ListDetailActivity extends AppCompatActivity implements DetailInter
     public Articolo articolo;
     public View filtro;
     boolean nascondi = false;
+    private EditText name;
+    private EditText value;
+    LinearLayout alertLayout;
+    FloatingActionButton fab;
 
     @Override
     public int getListId() {
@@ -47,7 +51,6 @@ public class ListDetailActivity extends AppCompatActivity implements DetailInter
     }
 
     public enum LayoutManagerType {
-        GRID_LAYOUT_MANAGER,
         LINEAR_LAYOUT_MANAGER
     }
 
@@ -58,23 +61,6 @@ public class ListDetailActivity extends AppCompatActivity implements DetailInter
         setContentView(R.layout.list_detail_layout);
         this.filtro = findViewById(R.id.filtro);
 
-        filtro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(nascondi == false) {
-                    findViewById(R.id.checkFiltro).setVisibility(View.VISIBLE);
-                    nascondi = true;
-                }
-                else {
-                    findViewById(R.id.checkFiltro).setVisibility(View.INVISIBLE);
-                    nascondi = false;
-                }
-                itemRecyclerAdapter.notifyDataSetChanged();
-                itemRecyclerAdapter.nascondi = nascondi;
-                itemRecyclerAdapter.updateList(ListDetailActivity.this);
-                itemRecyclerAdapter.notifyDataSetChanged();
-            }
-        });
 
         Intent fromAdapter = getIntent();
         String nameList = fromAdapter.getStringExtra("nome");
@@ -100,7 +86,25 @@ public class ListDetailActivity extends AppCompatActivity implements DetailInter
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        filtro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(nascondi == false) {
+                    findViewById(R.id.checkFiltro).setVisibility(View.VISIBLE);
+                    nascondi = true;
+                }
+                else {
+                    findViewById(R.id.checkFiltro).setVisibility(View.INVISIBLE);
+                    nascondi = false;
+                }
+                itemRecyclerAdapter.notifyDataSetChanged();
+                itemRecyclerAdapter.nascondi = nascondi;
+                itemRecyclerAdapter.updateList(ListDetailActivity.this);
+                itemRecyclerAdapter.notifyDataSetChanged();
+            }
+        });
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,21 +114,21 @@ public class ListDetailActivity extends AppCompatActivity implements DetailInter
                     @Override
                     public void run() {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(ListDetailActivity.this);
-                        final EditText name = new EditText(ListDetailActivity.this);
-                        final EditText value = new EditText(ListDetailActivity.this);
+                        name = new EditText(ListDetailActivity.this);
+                        value = new EditText(ListDetailActivity.this);
                         name.setInputType(InputType.TYPE_CLASS_TEXT);
                         builder.setTitle("Aggiungi Articolo");
 
-                        LinearLayout linearLayout = new LinearLayout(getApplicationContext());
-                        linearLayout.setMinimumWidth(1000);
-                        linearLayout.addView(name);
-                        linearLayout.addView(value);
-                        linearLayout.setOrientation(linearLayout.VERTICAL);
+                        alertLayout = new LinearLayout(getApplicationContext());
+                        alertLayout.setMinimumWidth(1000);
+                        alertLayout.addView(name);
+                        alertLayout.addView(value);
+                        alertLayout.setOrientation(alertLayout.VERTICAL);
                         name.setHint("Nome");
                         value.setHint("Quantità");
                         name.setWidth(500);
                         value.setWidth(500);
-                        builder.setView(linearLayout);
+                        builder.setView(alertLayout);
                         builder.setPositiveButton("Aggiungi", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
